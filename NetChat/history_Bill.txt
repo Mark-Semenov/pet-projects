@@ -1,0 +1,28 @@
+Mark: hi bill
+Bill: hello Mark
+Server: i'm server
+Mark: hi server
+Server: dsf
+Server: sdf
+Server: dsf
+KILL:  зашел в чат...
+KILL: hi everyone
+Killer: pih pah
+Server: 1
+Server: 2
+Server: 3
+Server: 4
+Killer: sdfsdf
+Killer: sdfsdfdf
+Killer: sdfdsfsd
+Killer: sdfsdf
+Killer: sdfdsf
+Killer: sdfsdf
+Killer: sdfsdfsf
+Killer: left chat
+Mark: left chat
+Я: sdfsdf
+Bill: ddd
+Mark:  зашел в чат...
+Mark: dsfsdf
+Mark: sdfdsfdsf

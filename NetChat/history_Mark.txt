@@ -1,0 +1,34 @@
+Bill:  зашел в чат...
+Я: hi bill
+Server: i'm server
+Я: hi server
+Server: dsf
+Server: sdf
+Server: dsf
+KILL:  зашел в чат...
+KILL: hi everyone
+Killer: pih pah
+Server: 1
+Server: 2
+Server: 3
+Server: 4
+Killer: sdfsdf
+Killer: sdfsdfdf
+Killer: sdfdsfsd
+Killer: sdfsdf
+Killer: sdfdsf
+Killer: sdfsdf
+Killer: dddd
+Killer: left chat
+Я: dsfsdf
+Я: sdfdsfdsf
+Bill: left chat
+Я: sadsad
+Server: sadsad
+Mark: sadasd
+Я: s
+Mila:  зашел в чат...
+Mila: hi MArk
+Я: hi everyone
+Milena: hi
+Milena: left chat
