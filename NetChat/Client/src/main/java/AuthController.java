@@ -4,7 +4,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
-import java.io.IOException;
 
 public class AuthController {
     Alert alert;
@@ -21,22 +20,22 @@ public class AuthController {
     public void entrance(ActionEvent event) {
         alert = new Alert(Alert.AlertType.WARNING);
         if (isInputCorrect()) {
-            Controller.client.sendCommand(Command.authCommand(login.getText(), password.getText()));
+            Controller.getClient().sendCommand(Command.authCommand(login.getText(), password.getText()));
             login.clear();
             password.clear();
         } else {
-            alert.initOwner(NetChat.authStage);
+            alert.initOwner(NetChat.getAuthWindow());
             alert.setHeaderText("Поля не заполнены");
             alert.showAndWait();
         }
     }
 
 
-    public void openRegWindow(ActionEvent event) throws IOException {
+    public void openRegWindow(ActionEvent event) {
         NetChat.signUpWindow();
     }
 
     public void closeWindow(ActionEvent event) {
-        NetChat.authStage.close();
+        NetChat.getAuthWindow().closeChatStage();
     }
 }

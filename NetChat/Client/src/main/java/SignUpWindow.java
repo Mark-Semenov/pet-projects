@@ -13,8 +13,8 @@ public class SignUpWindow {
 
     public void registration(ActionEvent event) {
 
-        Controller.client.sendCommand(Command.signUpNewUser(nickname.getText(), login.getText(), password.getText()));
-        NetChat.stageSignUp.close();
+        Controller.getClient().sendCommand(Command.signUpNewUser(nickname.getText(), login.getText(), password.getText()));
+        NetChat.getSignUpWindow().closeChatStage();
 
     }
 }

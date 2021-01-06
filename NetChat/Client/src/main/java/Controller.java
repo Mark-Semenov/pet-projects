@@ -14,20 +14,20 @@ import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
     @FXML
-    public Button enter;
+    private Button enter;
     @FXML
-    public TextArea chatTextArea;
+    private TextArea chatTextArea;
     @FXML
-    public TextField sendTextField;
+    private TextField sendTextField;
     @FXML
-    public Button sendButton;
+    private Button sendButton;
     @FXML
     private ListView<String> nickNames;
     @FXML
     private Text userTextField;
     @FXML
     private Button authButton;
-    public static Client client;
+    private static Client client;
     public static volatile String nickFromListView;
 
 
@@ -77,16 +77,17 @@ public class Controller implements Initializable {
     }
 
     public void changeNick(ActionEvent event) {
-        try {
-            NetChat.changeNickWindow();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        NetChat.getSecondStage().showChatStage();
+        NetChat.changeNickWindow();
     }
 
     public void exit(ActionEvent actionEvent) {
         Platform.exit();
         client.closeConnection();
+    }
+
+    public static Client getClient() {
+        return client;
     }
 
     public ListView<String> getNickNames() {

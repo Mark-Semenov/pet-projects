@@ -142,9 +142,13 @@ class Connection extends Thread {
 
     }
 
-    public void sendCommand(Command command) throws IOException {
+    public void sendCommand(Command command) {
         if (isConnectSocket) {
-            outputStream.writeObject(command);
+            try {
+                outputStream.writeObject(command);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

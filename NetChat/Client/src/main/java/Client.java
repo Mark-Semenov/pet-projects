@@ -72,13 +72,13 @@ public class Client {
                 break;
             case PRIVATE_MESSAGE: {
                 PrivateMessageCommandDate data = (PrivateMessageCommandDate) command.getData();
-                controller.chatTextArea.appendText(data.getReceiver() + ": " + data.getMessage() + "\n");
+                controller.getChatTextArea().appendText(data.getReceiver() + ": " + data.getMessage() + "\n");
                 saveHistory(data.getReceiver(), data.getMessage());
                 break;
             }
             case PUBLIC_MESSAGE:
                 PublicMessageCommandDate data = (PublicMessageCommandDate) command.getData();
-                controller.chatTextArea.appendText(data.getSender() + ": " + data.getMessage() + "\n");
+                controller.getChatTextArea().appendText(data.getSender() + ": " + data.getMessage() + "\n");
                 saveHistory(data.getSender(), data.getMessage());
                 break;
         }
@@ -118,7 +118,7 @@ public class Client {
                 case AUTH_OK: {
                     AuthOkCommandData data = (AuthOkCommandData) command.getData();
                     nick = data.getNickname();
-                    Platform.runLater(() -> NetChat.authStage.close());
+                    Platform.runLater(() -> NetChat.getAuthWindow().closeChatStage());
                     Platform.runLater((NetChat::showChat));
                     if (isHistoryWrite) {
                         String historyPath = "history_" + nick + ".txt";
@@ -126,7 +126,7 @@ public class Client {
                         fileReader = new BufferedReader(new FileReader(historyPath));
                         isHistoryWrite = false;
                     }
-                    Platform.runLater(() -> NetChat.primaryStage.setTitle(nick));
+                    Platform.runLater(() -> NetChat.getPrimaryStage().setTitle(nick));
                     Platform.runLater(this::loadHistory);
                     authorization = true;
                     break;
@@ -147,7 +147,7 @@ public class Client {
         String line;
         try {
             while (((line = fileReader.readLine()) != null)) {
-                controller.chatTextArea.appendText(line + "\n");
+                controller.getChatTextArea().appendText(line + "\n");
             }
         } catch (IOException e) {
             e.printStackTrace();

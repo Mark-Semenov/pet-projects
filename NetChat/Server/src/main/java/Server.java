@@ -11,6 +11,7 @@ public class Server {
     private final Scanner scanner = new Scanner(System.in);
     private final LinkedList<Connection> allConnections = new LinkedList<>();
 
+
     public Server(int SERVER_PORT) {
         this.SERVER_PORT = SERVER_PORT;
 
@@ -19,9 +20,8 @@ public class Server {
     public void startServer() {
 
         try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
+
             sendMsgFromServerToUsers();
-//            Thread sendMsgTo = new Thread(this::);
-//            sendMsgTo.start();
 
             while (isConnect) {
                 try {
@@ -57,25 +57,24 @@ public class Server {
     }
 
     public synchronized void broadcastMsg(String sender, String msg) throws IOException {
-        for (Connection connection : allConnections) {
-            if (!connection.getNickname().equals(sender)) {
-                connection.sendCommand(Command.publicMessageCommand(sender, msg));
-            }
-        }
+
+        allConnections.stream()
+                .filter(c -> !c.getNickname().equals(sender))
+                .forEach(c -> c.sendCommand(Command.publicMessageCommand(sender, msg)));
     }
 
-    public synchronized void sndPersonalMsg(Connection sender, String receiver, String msg) throws IOException {
-        for (Connection connection : allConnections) {
-            if (connection.getNickname().equals(receiver)) {
-                connection.sendCommand(Command.privateMessageCommand(sender.getNickname(), msg));
-                return;
-            }
-        }
-        sender.getOutputStream().writeObject(Command.errorMessageCommand("Участника " + receiver + " нет в чате"));
+    public synchronized void sndPersonalMsg(Connection sender, String receiver, String msg) {
+
+        allConnections.stream()
+                .filter(c -> c.getNickname().equals(receiver))
+                .forEach(c -> c.sendCommand(Command.publicMessageCommand(sender.getNickname(), msg)));
+
+        sender.sendCommand(Command.errorMessageCommand("Участника " + receiver + " нет в чате"));
     }
 
-    public synchronized void sendInfoAboutClients() throws IOException {
+    public void sendInfoAboutClients() throws IOException {
         LinkedList<String> list = new LinkedList<>();
+
         for (Connection connection : allConnections) {
             list.add(connection.getNickname());
         }
@@ -87,8 +86,8 @@ public class Server {
 
     public synchronized boolean isNickBusy(String nick) {
 
-        for (Connection o : allConnections) {
-            if (o.getNickname().equals(nick)) {
+        for (Connection connection : allConnections) {
+            if (connection.getNickname().equals(nick)) {
                 return true;
             }
         }
@@ -99,12 +98,8 @@ public class Server {
         new Thread(() -> {
             while (isConnect) {
                 String msgToUsers = scanner.nextLine();
-                try {
-                    for (Connection c : allConnections) {
-                        c.sendCommand(Command.publicMessageCommand("Server", msgToUsers));
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
+                for (Connection c : allConnections) {
+                    c.sendCommand(Command.publicMessageCommand("Server", msgToUsers));
                 }
             }
         }).start();
@@ -112,11 +107,9 @@ public class Server {
     }
 
 
-
     public LinkedList<Connection> getAllConnections() {
         return allConnections;
     }
-
 
 
     public static void main(String[] args) {

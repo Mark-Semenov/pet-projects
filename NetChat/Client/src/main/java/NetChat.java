@@ -2,20 +2,16 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
-
 import java.io.IOException;
 
 
 public class NetChat extends Application {
 
-    public static Stage primaryStage;
-    public static Stage authStage;
-    public static Stage stageChangeNick;
-    public static Stage stageSignUp;
-
+    private static Stage primaryStage;
+    private static final ChatStage authWindow = new ChatStage("Authorization", "/authentication.fxml");
+    private static ChatStage signUpWindow;
+    private static ChatStage changeNickWindow;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -27,64 +23,55 @@ public class NetChat extends Application {
     }
 
     public static void showChat() {
-
         primaryStage.show();
     }
 
     public void initChat() throws IOException {
+
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("/sample.fxml"));
         Parent root = fxmlLoader.load();
         primaryStage.setTitle("Simple chat");
-        primaryStage.resizableProperty().setValue(false);
+        primaryStage.setResizable(false);
         primaryStage.setScene(new Scene(root, 600, 500));
     }
 
-    public static void authentication() throws IOException {
-        FXMLLoader loader = new FXMLLoader();
-        loader.setLocation(NetChat.class.getResource("/authentication.fxml"));
-        AnchorPane page = loader.load();
-        authStage = new Stage();
-        authStage.setTitle("Authorization");
-        Scene scene = new Scene(page);
-        authStage.setScene(scene);
-        authStage.resizableProperty().setValue(false);
-        authStage.show();
+    public static void authentication(){
 
+        authWindow.showChatStage();
     }
 
-    public static void signUpWindow() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(NetChat.class.getResource("/signUpWindow.fxml"));
-        AnchorPane anchorPane = fxmlLoader.load();
-        stageSignUp = new Stage();
-        stageSignUp.setTitle("Registration");
-        Scene scene = new Scene(anchorPane);
-        stageSignUp.setScene(scene);
-        stageSignUp.initModality(Modality.WINDOW_MODAL);
-        stageSignUp.initOwner(authStage);
-        stageSignUp.show();
+    public static void signUpWindow() {
+        signUpWindow = new ChatStage("Registration", "/signUpWindow.fxml", authWindow.getStage());
+        signUpWindow.showChatStage();
     }
 
-    public static void changeNickWindow() throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader();
-        fxmlLoader.setLocation(NetChat.class.getResource("/changeNickWindow.fxml"));
-        AnchorPane anchorPane = fxmlLoader.load();
-        stageChangeNick = new Stage();
-        stageChangeNick.setTitle("Change Nickname");
-        Scene scene = new Scene(anchorPane);
-        stageChangeNick.setScene(scene);
-        stageChangeNick.initModality(Modality.WINDOW_MODAL);
-        stageChangeNick.initOwner(primaryStage);
-        stageChangeNick.show();
+    public static void changeNickWindow() {
+        changeNickWindow = new ChatStage("Change your nickname", "/changeNickWindow.fxml", primaryStage);
+        changeNickWindow.showChatStage();
     }
 
     @Override
     public void stop() throws Exception {
         super.stop();
-        Controller.client.getSocket().close();
+        Controller.getClient().getSocket().close();
     }
 
+    public static ChatStage getAuthWindow() {
+        return authWindow;
+    }
+
+    public static ChatStage getSignUpWindow() {
+        return signUpWindow;
+    }
+
+    public static ChatStage getChangeNickWindow() {
+        return changeNickWindow;
+    }
+
+    public static Stage getPrimaryStage() {
+        return primaryStage;
+    }
 
     public static void main(String[] args) {
 

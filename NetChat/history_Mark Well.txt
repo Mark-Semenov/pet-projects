@@ -1,0 +1,10 @@
+Я: sdfsdf
+Bill:  зашел в чат...
+Bill: привет
+Bill: как сам
+Я: Привет
+Я: все ок
+Я: всем привет
+Server: привет 
+Bill: left chat
+Я: eeee
