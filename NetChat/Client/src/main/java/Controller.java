@@ -28,7 +28,7 @@ public class Controller implements Initializable {
     @FXML
     private Button authButton;
     private static Client client;
-    public static volatile String nickFromListView;
+    private String nickFromListView;
 
 
     @Override
@@ -77,7 +77,6 @@ public class Controller implements Initializable {
     }
 
     public void changeNick(ActionEvent event) {
-//        NetChat.getSecondStage().showChatStage();
         NetChat.changeNickWindow();
     }
 

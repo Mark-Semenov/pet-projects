@@ -3,6 +3,8 @@ import javafx.collections.FXCollections;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Client {
 
@@ -68,21 +70,25 @@ public class Client {
         switch (command.getType()) {
             case INFO_ABOUT_USERS:
                 SendInfoAboutUsers info = (SendInfoAboutUsers) command.getData();
-                Platform.runLater(() -> controller.getNickNames().setItems(FXCollections.observableList(info.getClientsNicknames())));
+                changeTitleToNick(info.clientsNicknames);
                 break;
             case PRIVATE_MESSAGE: {
                 PrivateMessageCommandDate data = (PrivateMessageCommandDate) command.getData();
-                controller.getChatTextArea().appendText(data.getReceiver() + ": " + data.getMessage() + "\n");
+                Platform.runLater(() -> controller.getChatTextArea().appendText(data.getReceiver() + ": " + data.getMessage() + "\n"));
                 saveHistory(data.getReceiver(), data.getMessage());
                 break;
             }
             case PUBLIC_MESSAGE:
                 PublicMessageCommandDate data = (PublicMessageCommandDate) command.getData();
-                controller.getChatTextArea().appendText(data.getSender() + ": " + data.getMessage() + "\n");
+                Platform.runLater(() -> controller.getChatTextArea().appendText(data.getSender() + ": " + data.getMessage() + "\n"));
                 saveHistory(data.getSender(), data.getMessage());
                 break;
         }
 
+    }
+
+    public void changeTitleToNick (List<String> info){
+        Platform.runLater(() -> controller.getNickNames().setItems(FXCollections.observableList(info)));
     }
 
     public void closeConnection() {

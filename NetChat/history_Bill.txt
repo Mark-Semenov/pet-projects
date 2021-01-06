@@ -1,6 +1,0 @@
-Я: привет
-Я: как сам
-Mark Well: Привет
-Mark Well: все ок
-Mark Well: всем привет
-Server: привет 
