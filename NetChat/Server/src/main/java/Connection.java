@@ -3,7 +3,7 @@ import java.net.Socket;
 import java.sql.SQLException;
 
 
-class Connection extends Thread {
+class Connection {
 
     private final Server server;
     private final Socket socket;
@@ -23,7 +23,7 @@ class Connection extends Thread {
             if (!authorization) {
                 authentication();
             }
-            start();
+            run();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,7 +66,6 @@ class Connection extends Thread {
                         nickname = data.getNickname();
                         successAuth();
                         break;
-
                 }
             } catch (IOException e) {
                 System.out.println("Соединение прервано");
@@ -118,26 +117,28 @@ class Connection extends Thread {
     public void getMessage() throws IOException {
 
         Command command = readCommand();
-        switch (command.getType()) {
-            case PRIVATE_MESSAGE: {
-                PrivateMessageCommandDate data = (PrivateMessageCommandDate) command.getData();
-                server.sndPersonalMsg(this, data.getReceiver(), data.getMessage());
-                break;
+        if (command != null) {
+            switch (command.getType()) {
+                case PRIVATE_MESSAGE: {
+                    PrivateMessageCommandDate data = (PrivateMessageCommandDate) command.getData();
+                    server.sndPersonalMsg(this, data.getReceiver(), data.getMessage());
+                    break;
+                }
+                case PUBLIC_MESSAGE: {
+                    PublicMessageCommandDate data = (PublicMessageCommandDate) command.getData();
+                    server.broadcastMsg(nickname, data.getMessage());
+                    System.out.println(nickname + ": " + data.getMessage());
+                    break;
+                }
+                case CHANGE_NICKNAME:
+                    ChangeNicknameData data = (ChangeNicknameData) command.getData();
+                    SQLiteBase.changeNick(data.getNickname(), nickname);
+                    nickname = data.getNickname();
+                    server.sendInfoAboutClients();
+                    break;
+                default:
+                    throw new IllegalArgumentException("Unknown command type: " + command.getType());
             }
-            case PUBLIC_MESSAGE: {
-                PublicMessageCommandDate data = (PublicMessageCommandDate) command.getData();
-                server.broadcastMsg(nickname, data.getMessage());
-                System.out.println(nickname + ": " + data.getMessage());
-                break;
-            }
-            case CHANGE_NICKNAME:
-                ChangeNicknameData data = (ChangeNicknameData) command.getData();
-                SQLiteBase.changeNick(data.getNickname(), nickname);
-                nickname = data.getNickname();
-                server.sendInfoAboutClients();
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown command type: " + command.getType());
         }
 
     }

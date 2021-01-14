@@ -48,7 +48,6 @@ public class Controller implements Initializable {
                         client.sendCommand(Command.privateMessageCommand(nickFromListView, sendTextField.getText()));
                         if (!client.getNick().equals(nickFromListView)) {
                             appendMessage();
-
                         }
                     } else {
                         client.sendCommand(Command.publicMessageCommand(client.getNick(), sendTextField.getText()));
@@ -64,7 +63,7 @@ public class Controller implements Initializable {
     }
 
     private void appendMessage() throws IOException {
-        chatTextArea.appendText("Я: " + sendTextField.getText() + "\n");
+        chatTextArea.appendText("Я: " + sendTextField.getText() + System.lineSeparator());
         client.saveHistory(sendTextField.getText());
     }
 

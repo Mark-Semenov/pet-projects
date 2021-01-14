@@ -3,6 +3,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.Scanner;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Server {
 
@@ -10,7 +12,8 @@ public class Server {
     private volatile boolean isConnect = true;
     private final Scanner scanner = new Scanner(System.in);
     private final LinkedList<Connection> allConnections = new LinkedList<>();
-
+    private final int POOL_COUNT = 3;
+    private ExecutorService service = Executors.newFixedThreadPool(POOL_COUNT);
 
     public Server(int SERVER_PORT) {
         this.SERVER_PORT = SERVER_PORT;
@@ -18,6 +21,7 @@ public class Server {
     }
 
     public void startServer() {
+        int clientCount = 1;
 
         try (ServerSocket serverSocket = new ServerSocket(SERVER_PORT)) {
 
@@ -26,9 +30,16 @@ public class Server {
             while (isConnect) {
                 try {
                     Socket socket = serverSocket.accept();
-                    new Connection(socket, this);
+                    service.execute(() -> new Connection(socket, this));
+                    ++clientCount;
+                    
+                    if (clientCount >= POOL_COUNT) {
+                        service.shutdown();
+                        service = Executors.newFixedThreadPool(POOL_COUNT + clientCount);
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
+                    service.shutdownNow();
                     isConnect = false;
                     return;
                 }
@@ -95,15 +106,14 @@ public class Server {
     }
 
     private void sendMsgFromServerToUsers() {
-        new Thread(() -> {
+        service.execute(() -> {
             while (isConnect) {
                 String msgToUsers = scanner.nextLine();
                 for (Connection c : allConnections) {
                     c.sendCommand(Command.publicMessageCommand("Server", msgToUsers));
                 }
             }
-        }).start();
-
+        });
     }
 
 

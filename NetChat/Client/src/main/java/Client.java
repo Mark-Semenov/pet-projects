@@ -4,7 +4,6 @@ import javafx.collections.FXCollections;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Client {
 
@@ -16,7 +15,7 @@ public class Client {
     private volatile static boolean authorization = false;
     private boolean isHistoryWrite = true;
     private String nick;
-    private BufferedWriter fileWriter = null;
+    private BufferedWriter fileWriter;
     private BufferedReader fileReader;
 
 
@@ -70,24 +69,28 @@ public class Client {
         switch (command.getType()) {
             case INFO_ABOUT_USERS:
                 SendInfoAboutUsers info = (SendInfoAboutUsers) command.getData();
-                changeTitleToNick(info.clientsNicknames);
+                loadNicksToListView(info.clientsNicknames);
                 break;
             case PRIVATE_MESSAGE: {
                 PrivateMessageCommandDate data = (PrivateMessageCommandDate) command.getData();
-                Platform.runLater(() -> controller.getChatTextArea().appendText(data.getReceiver() + ": " + data.getMessage() + "\n"));
+                appendLineIntoTextArea(data.getReceiver(), data.getMessage());
                 saveHistory(data.getReceiver(), data.getMessage());
                 break;
             }
             case PUBLIC_MESSAGE:
                 PublicMessageCommandDate data = (PublicMessageCommandDate) command.getData();
-                Platform.runLater(() -> controller.getChatTextArea().appendText(data.getSender() + ": " + data.getMessage() + "\n"));
+                appendLineIntoTextArea(data.getSender(), data.getMessage());
                 saveHistory(data.getSender(), data.getMessage());
                 break;
         }
 
     }
 
-    public void changeTitleToNick (List<String> info){
+    private void appendLineIntoTextArea(String nickname, String message) {
+        Platform.runLater(() -> controller.getChatTextArea().appendText(nickname + ": " + message + System.lineSeparator()));
+    }
+
+    public void loadNicksToListView(List<String> info) {
         Platform.runLater(() -> controller.getNickNames().setItems(FXCollections.observableList(info)));
     }
 
@@ -95,8 +98,10 @@ public class Client {
 
         if (socket.isConnected()) {
             try {
-                fileReader.close();
-                fileWriter.close();
+                if (!isHistoryWrite) {
+                    fileReader.close();
+                    fileWriter.close();
+                }
                 outputStream.close();
                 inputStream.close();
                 socket.close();
@@ -117,9 +122,7 @@ public class Client {
     public void authentication() throws IOException {
 
         while (!authorization) {
-
             Command command = readCommand();
-
             switch (command.getType()) {
                 case AUTH_OK: {
                     AuthOkCommandData data = (AuthOkCommandData) command.getData();
@@ -153,7 +156,7 @@ public class Client {
         String line;
         try {
             while (((line = fileReader.readLine()) != null)) {
-                controller.getChatTextArea().appendText(line + "\n");
+                controller.getChatTextArea().appendText(line + System.lineSeparator());
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -166,19 +169,19 @@ public class Client {
         try {
             command = (Command) inputStream.readObject();
         } catch (ClassNotFoundException e) {
-            e.getCause();
             e.printStackTrace();
-            e.getException();
         }
         return command;
     }
 
     public void saveHistory(String message) throws IOException {
-        fileWriter.write("Я: " + message + "\n");
+        fileWriter.write("Я: " + message + System.lineSeparator());
     }
+
     public void saveHistory(String username, String message) throws IOException {
-        fileWriter.write(username + ": " + message + "\n");
+        fileWriter.write(username + ": " + message + System.lineSeparator());
     }
+
 
     public Client getClient() {
         return this;
